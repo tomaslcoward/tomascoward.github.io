@@ -2,7 +2,7 @@
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tomas Coward</title>
 
     <link rel="preload" href="HyperScrypt.otf" as="font" type="font/otf" crossorigin>
@@ -12,7 +12,7 @@
         @font-face {
             font-family: 'HyperScrypt';
             src: url('HyperScrypt.otf') format('opentype');
-            font-display: swap; /* Fixes performance/invisible text issues */
+            font-display: swap; 
         }
         @font-face {
             font-family: 'AlteHaasBold';
@@ -26,7 +26,7 @@
             padding: 0;
             width: 100%;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden; /* This keeps your "locked" layout feeling intact */
             background: #fff;
             cursor: none;
         }
@@ -44,7 +44,7 @@
             transition: transform 0.05s ease-out;
         }
 
-        /* Fixed Accessibility: Document now has a <main> landmark */
+        /* Using <main> class for the 48% column layout */
         .content-stack {
             width: 48%;
             height: 100vh;
@@ -72,7 +72,7 @@
         }
 
         .fluid-name {
-            /* Font Fallback Chain: HyperScrypt -> AlteHaasBold -> Helvetica -> Arial */
+            /* Full Fallback Chain: HyperScrypt -> AlteHaasBold -> Helvetica -> Arial */
             font-family: 'HyperScrypt', 'AlteHaasBold', 'Helvetica', 'Arial', sans-serif;
             text-transform: uppercase;
             font-size: 120px;
