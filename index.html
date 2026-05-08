@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tomas Coward</title>
+
+    <link rel="preload" href="HyperScrypt.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="AlteHaasGroteskBold.ttf" as="font" type="font/ttf" crossorigin>
+
     <style>
         @font-face {
             font-family: 'HyperScrypt';
             src: url('HyperScrypt.otf') format('opentype');
+            font-display: swap; /* Fixes performance/invisible text issues */
         }
         @font-face {
             font-family: 'AlteHaasBold';
             src: url('AlteHaasGroteskBold.ttf') format('truetype');
             font-weight: bold;
+            font-display: swap;
         }
 
         html, body {
@@ -38,7 +44,7 @@
             transition: transform 0.05s ease-out;
         }
 
-        /* 48% column, left-anchored */
+        /* Fixed Accessibility: Document now has a <main> landmark */
         .content-stack {
             width: 48%;
             height: 100vh;
@@ -49,7 +55,6 @@
             box-sizing: border-box;
         }
 
-        /* Flex row: name (clipped) + nav (unclipped) */
         .header-outer {
             width: 100%;
             flex-shrink: 0;
@@ -57,8 +62,6 @@
             align-items: flex-end;
         }
 
-        /* overflow:hidden gives the name straight left/right edges.
-           Height and padding-bottom are set by JS. */
         .header-row {
             flex-grow: 1;
             overflow: hidden;
@@ -69,7 +72,8 @@
         }
 
         .fluid-name {
-            font-family: 'HyperScrypt', sans-serif;
+            /* Font Fallback Chain: HyperScrypt -> AlteHaasBold -> Helvetica -> Arial */
+            font-family: 'HyperScrypt', 'AlteHaasBold', 'Helvetica', 'Arial', sans-serif;
             text-transform: uppercase;
             font-size: 120px;
             line-height: 1;
@@ -82,7 +86,7 @@
         nav {
             display: flex;
             gap: 20px;
-            font-family: 'AlteHaasBold', sans-serif;
+            font-family: 'AlteHaasBold', 'Helvetica', 'Arial', sans-serif;
         }
 
         @media (min-width: 801px) {
@@ -107,7 +111,6 @@
             color: #444;
         }
 
-        /* Image fills all remaining height */
         .image-container {
             flex-grow: 1;
             overflow: hidden;
@@ -127,7 +130,7 @@
             nav { right: 30px; }
         }
 
-        /* Mobile — nav moves inline beside name, outside overflow:hidden */
+        /* Mobile */
         @media (max-width: 800px) {
             html, body { cursor: auto; }
             #custom-cursor { display: none; }
@@ -141,7 +144,7 @@
 
     <div id="custom-cursor"></div>
 
-    <div class="content-stack">
+    <main class="content-stack">
         <div class="header-outer">
             <div class="header-row" id="header-row">
                 <h1 class="fluid-name" id="name-text">TOMAS COWARD</h1>
@@ -154,7 +157,7 @@
         <div class="image-container">
             <img src="home.webp" alt="Tomas Coward">
         </div>
-    </div>
+    </main>
 
     <script>
         var headerRow = document.getElementById('header-row');
@@ -177,7 +180,6 @@
             text.style.transform   = 'scale(' + scale + ')';
             headerRow.style.height = (scaledHeight + 10) + 'px';
 
-            // Centre fixed nav within the header area on desktop
             nav.style.top = mobile ? '' : (14 + (scaledHeight + 10) / 2 - nav.offsetHeight / 2) + 'px';
         }
 
