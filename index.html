@@ -2,19 +2,108 @@
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <title>Author Name</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomas Coward</title>
     <style>
-        body { background: #fff; color: #000; font-family: "Times New Roman", serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        nav { position: absolute; bottom: 20px; }
-        a { color: #000; text-decoration: none; margin: 0 15px; font-style: italic; }
-        a:hover { text-decoration: underline; }
+        @font-face {
+            font-family: 'HyperScrypt';
+            src: url('Hyper-Scrypt.otf') format('opentype'); /* Verify exact filename & extension */
+            font-weight: normal;
+        }
+
+        @font-face {
+            font-family: 'AlteHaas';
+            src: url('AlteHaasGroteskRegular.ttf') format('truetype'); /* Verify exact filename */
+            font-weight: normal;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #000;
+            /* Using standard UK spelling in comments: the layout is centralised but padded */
+        }
+
+        /* 30px padding on the left and right of the entire viewport */
+        .page-container {
+            padding: 0 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* Header contains the Name and Nav */
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        /* The Name: Scaled to be wide. 
+           Using a negative letter-spacing if needed to match the tight Framer look */
+        h1 {
+            font-family: 'HyperScrypt', sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 8vw; /* Adjusts based on viewport width */
+            line-height: 0.9;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navigation: Top Right */
+        nav {
+            font-family: 'AlteHaas', sans-serif;
+            display: flex;
+            gap: 20px;
+            margin-top: 10px; /* Aligns with the top of the large text */
+        }
+
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        /* The Box / Image Area: Scales with the text width */
+        .image-container {
+            width: 100%;
+            margin-top: 0; /* Flush with the text above */
+        }
+
+        .box {
+            width: 100%;
+            aspect-ratio: 1 / 1.2; /* Adjust this ratio to match your horse image */
+            background-color: #000; /* Your placeholder */
+            display: block;
+        }
+
+        /* Responsive: ensures text doesn't get comically large on massive screens */
+        @media (min-width: 1400px) {
+            h1 { font-size: 110px; }
+        }
     </style>
 </head>
 <body>
-    <h1>AUTHOR NAME</h1>
-    <nav>
-        <a href="work.html">Work</a>
-        <a href="about.html">About</a>
-    </nav>
+
+    <div class="page-container">
+        <header>
+            <h1>Tomas Coward</h1>
+            <nav>
+                <a href="work.html">Work</a>
+                <a href="about.html">About</a>
+            </nav>
+        </header>
+
+        <div class="image-container">
+            <div class="box"></div>
+        </div>
+    </div>
+
 </body>
 </html>
