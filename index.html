@@ -2,112 +2,193 @@
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tomas Coward</title>
     <style>
-        /* 1. FONT LOADING - Matching your uploaded filenames exactly */
         @font-face {
             font-family: 'HyperScrypt';
             src: url('HyperScrypt.otf') format('opentype');
-            font-weight: normal;
         }
-
-        @font-face {
-            font-family: 'AlteHaas';
-            src: url('alte-haas-grotesk.regular.ttf') format('truetype');
-            font-weight: normal;
-        }
-
         @font-face {
             font-family: 'AlteHaasBold';
             src: url('AlteHaasGroteskBold.ttf') format('truetype');
             font-weight: bold;
         }
 
-        /* 2. BASE RESET */
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            background-color: #fff;
-            color: #000;
-            -webkit-font-smoothing: antialiased;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: #fff;
+            cursor: none;
         }
 
-        /* 3. LAYOUT CONTAINER */
-        .page-container {
-            padding: 0 30px; /* Your fixed 30px padding */
-            max-width: 100%;
+        #custom-cursor {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease-out;
+        }
+
+        /* 48% column, left-anchored */
+        .content-stack {
+            width: 48%;
+            height: 100vh;
+            margin-left: 50px;
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
             box-sizing: border-box;
         }
 
-        /* 4. HEADER (Name + Nav) */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        /* Flex row: name (clipped) + nav (unclipped) */
+        .header-outer {
             width: 100%;
-            margin-top: 10px; /* Minimal top margin to match the tight look */
+            flex-shrink: 0;
+            display: flex;
+            align-items: flex-end;
         }
 
-        h1 {
+        /* overflow:hidden gives the name straight left/right edges.
+           Height and padding-bottom are set by JS. */
+        .header-row {
+            flex-grow: 1;
+            overflow: hidden;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: flex-end;
+            box-sizing: border-box;
+        }
+
+        .fluid-name {
             font-family: 'HyperScrypt', sans-serif;
-            margin: 0;
-            padding: 0;
-            /* Using vw so the text scales with the width of the box below */
-            font-size: 8.4vw; 
-            line-height: 1;
             text-transform: uppercase;
-            letter-spacing: -0.01em;
+            font-size: 120px;
+            line-height: 1;
+            margin: 0;
+            white-space: nowrap;
+            display: inline-block;
+            transform-origin: left bottom;
         }
 
         nav {
-            font-family: 'AlteHaasBold', sans-serif;
             display: flex;
             gap: 20px;
-            margin-top: 15px; /* Slight offset for top-right alignment */
+            font-family: 'AlteHaasBold', sans-serif;
         }
 
-        nav a {
+        @media (min-width: 801px) {
+            nav {
+                position: fixed;
+                right: 50px;
+                align-items: center;
+            }
+        }
+
+        .nav-link {
             color: #000;
             text-decoration: none;
-            font-size: 1.1rem;
+            font-size: 24px;
             text-transform: uppercase;
+            cursor: none;
+            transition: filter 0.3s ease-out, color 0.2s ease;
         }
 
-        /* 5. THE IMAGE BOX */
+        .nav-link:hover {
+            filter: blur(4px);
+            color: #444;
+        }
+
+        /* Image fills all remaining height */
         .image-container {
-            width: 100%;
-            margin-top: 5px; /* Tight gap between text and image */
+            flex-grow: 1;
+            overflow: hidden;
         }
 
-        .box {
+        .image-container img {
             width: 100%;
-            aspect-ratio: 1 / 1.25; /* Adjusted based on your horse image screenshot */
-            background-color: #000;
+            height: 100%;
             display: block;
+            object-fit: cover;
+            object-position: top;
         }
 
-        /* Desktop Cap: prevents text from growing too large on ultra-wide monitors */
-        @media (min-width: 1600px) {
-            h1 { font-size: 135px; }
+        /* Tablet */
+        @media (max-width: 1024px) and (min-width: 801px) {
+            .content-stack { width: calc(48% - 20px); margin-left: 30px; }
+            nav { right: 30px; }
+        }
+
+        /* Mobile — nav moves inline beside name, outside overflow:hidden */
+        @media (max-width: 800px) {
+            html, body { cursor: auto; }
+            #custom-cursor { display: none; }
+            .content-stack { width: calc(100% - 40px); margin-left: 20px; }
+            nav { position: relative; align-items: flex-end; padding: 0 0 10px 15px; flex-shrink: 0; }
+            .nav-link { font-size: 16px; cursor: auto; }
         }
     </style>
 </head>
 <body>
 
-    <div class="page-container">
-        <header>
-            <h1>Tomas Coward</h1>
-            <nav>
-                <a href="work.html">Work</a>
-                <a href="about.html">About</a>
-            </nav>
-        </header>
+    <div id="custom-cursor"></div>
 
+    <div class="content-stack">
+        <div class="header-outer">
+            <div class="header-row" id="header-row">
+                <h1 class="fluid-name" id="name-text">TOMAS COWARD</h1>
+            </div>
+            <nav id="main-nav">
+                <a href="work.html" class="nav-link">Work</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
         <div class="image-container">
-            <div class="box"></div>
+            <img src="home.webp" alt="Tomas Coward">
         </div>
     </div>
 
+    <script>
+        var headerRow = document.getElementById('header-row');
+        var stack     = document.querySelector('.content-stack');
+        var text      = document.getElementById('name-text');
+        var nav       = document.getElementById('main-nav');
+
+        function fitText() {
+            var mobile = window.innerWidth <= 800;
+            text.style.transform = 'scale(1)';
+
+            var targetWidth  = mobile ? headerRow.clientWidth : stack.clientWidth;
+            var textWidth    = text.offsetWidth;
+            var textHeight   = text.offsetHeight;
+            if (!textWidth) return;
+
+            var scale        = targetWidth / textWidth;
+            var scaledHeight = textHeight * scale;
+
+            text.style.transform   = 'scale(' + scale + ')';
+            headerRow.style.height = (scaledHeight + 10) + 'px';
+
+            // Centre fixed nav within the header area on desktop
+            nav.style.top = mobile ? '' : (14 + (scaledHeight + 10) / 2 - nav.offsetHeight / 2) + 'px';
+        }
+
+        document.fonts.ready.then(fitText);
+        window.addEventListener('resize', fitText);
+
+        var cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', function(e) {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top  = e.clientY + 'px';
+        });
+    </script>
 </body>
 </html>
