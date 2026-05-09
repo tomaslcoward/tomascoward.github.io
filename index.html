@@ -4,189 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tomas Coward</title>
-
     <link rel="preload" href="HyperScrypt.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="AlteHaasGroteskBold.ttf" as="font" type="font/ttf" crossorigin>
 
     <style>
-        @font-face {
-            font-family: 'HyperScrypt';
-            src: url('HyperScrypt.otf') format('opentype');
-            font-display: swap; 
-        }
-        @font-face {
-            font-family: 'AlteHaasBold';
-            src: url('AlteHaasGroteskBold.ttf') format('truetype');
-            font-weight: bold;
-            font-display: swap;
-        }
+        @font-face { font-family: 'HyperScrypt'; src: url('HyperScrypt.otf') format('opentype'); font-display: swap; }
+        @font-face { font-family: 'AlteHaasRegular'; src: url('alte-haas-grotesk.regular.ttf') format('truetype'); font-display: swap; }
+        @font-face { font-family: 'AlteHaasBold'; src: url('AlteHaasGroteskBold.ttf') format('truetype'); font-display: swap; }
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden; /* This keeps your "locked" layout feeling intact */
-            background: #fff;
-            cursor: none;
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #fff; cursor: none; }
+        :focus-visible { outline: 2px solid #000; outline-offset: 3px; }
 
-        #custom-cursor {
-            width: 20px;
-            height: 20px;
-            background: #fff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-            transform: translate(-50%, -50%);
-            transition: transform 0.05s ease-out;
-        }
+        #cursor { width: 20px; height: 20px; background: #fff; border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; mix-blend-mode: difference; transform: translate(-50%, -50%); }
 
-        /* Using <main> class for the 48% column layout */
-        .content-stack {
-            width: 48%;
-            height: 100vh;
-            margin-left: 50px;
-            padding-top: 14px;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-        }
+        .content-stack { width: 48%; height: 100vh; margin-left: 50px; padding-top: 14px; display: flex; flex-direction: column; box-sizing: border-box; }
+        .header-outer { width: 100%; flex-shrink: 0; display: flex; align-items: flex-end; background: transparent; position: relative; z-index: 9001; }
+        .header-row { width: 100%; overflow: visible; padding-bottom: 10px; display: flex; align-items: flex-end; }
 
-        .header-outer {
-            width: 100%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: flex-end;
-        }
+        .fluid-name { font-family: 'HyperScrypt', sans-serif; text-transform: uppercase; font-size: 120px; line-height: 1; margin: 0; white-space: nowrap; transform-origin: left bottom; text-decoration: none; color: #000; display: inline-block; }
 
-        .header-row {
-            flex-grow: 1;
-            overflow: hidden;
-            padding-bottom: 10px;
-            display: flex;
-            align-items: flex-end;
-            box-sizing: border-box;
-        }
+        nav { display: flex; gap: 20px; font-family: 'AlteHaasBold', sans-serif; text-transform: uppercase; position: fixed; z-index: 9002; pointer-events: auto; }
+        @media (min-width: 801px) { nav { right: 50px; align-items: center; } }
 
-        .fluid-name {
-            /* Full Fallback Chain: HyperScrypt -> AlteHaasBold -> Helvetica -> Arial */
-            font-family: 'HyperScrypt', 'AlteHaasBold', 'Helvetica', 'Arial', sans-serif;
-            text-transform: uppercase;
-            font-size: 120px;
-            line-height: 1;
-            margin: 0;
-            white-space: nowrap;
-            display: inline-block;
-            transform-origin: left bottom;
-        }
+        .nav-link { color: #000; text-decoration: none; font-size: 24px; cursor: none; transition: filter 0.3s ease; }
+        .nav-link:hover { filter: blur(4px); }
+        body.info-open #info-link { filter: blur(2px); }
 
-        nav {
-            display: flex;
-            gap: 20px;
-            font-family: 'AlteHaasBold', 'Helvetica', 'Arial', sans-serif;
-        }
+        .image-container { flex-grow: 1; overflow: hidden; z-index: 1; }
+        .image-container img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
 
-        @media (min-width: 801px) {
-            nav {
-                position: fixed;
-                right: 50px;
-                align-items: center;
-            }
-        }
+        #info-panel { position: fixed; top: 0; right: 0; width: calc(52% - 50px); height: 100vh; z-index: 1000; transform: translateX(100%); transition: transform 0.6s cubic-bezier(0.83, 0, 0.17, 1); overflow-y: auto; scrollbar-width: none; pointer-events: none; box-sizing: border-box; background: #fff; }
+        #info-panel.is-open { transform: translateX(0); pointer-events: auto; }
+        #info-panel::-webkit-scrollbar { display: none; }
 
-        .nav-link {
-            color: #000;
-            text-decoration: none;
-            font-size: 24px;
-            text-transform: uppercase;
-            cursor: none;
-            transition: filter 0.3s ease-out, color 0.2s ease;
-        }
+        .info-content { font-family: 'AlteHaasRegular', sans-serif; font-size: 16px; line-height: 1.4; text-transform: uppercase; padding: 0 50px 0 20px; opacity: 0; transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; }
+        #info-panel.is-open .info-content { opacity: 1; }
+        .info-content p { margin: 0 0 1em; }
 
-        .nav-link:hover {
-            filter: blur(4px);
-            color: #444;
-        }
-
-        .image-container {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            object-position: top;
-        }
-
-        /* Tablet */
-        @media (max-width: 1024px) and (min-width: 801px) {
-            .content-stack { width: calc(48% - 20px); margin-left: 30px; }
-            nav { right: 30px; }
-        }
-
-        /* Mobile */
         @media (max-width: 800px) {
             html, body { cursor: auto; }
-            #custom-cursor { display: none; }
-            .content-stack { width: calc(100% - 40px); margin-left: 20px; }
-            nav { position: relative; align-items: flex-end; padding: 0 0 10px 15px; flex-shrink: 0; }
+            #cursor { display: none; }
+            .content-stack { width: calc(100% - 60px); margin-left: 30px; height: 100vh; position: relative; }
+            nav { right: 30px; gap: 15px; display: flex; }
             .nav-link { font-size: 16px; cursor: auto; }
+            #info-panel { width: 100%; transform: translateY(100%); z-index: 5000; }
+            #info-panel.is-open { transform: translateY(0); }
+            .info-content { padding: 0 30px 40px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="custom-cursor"></div>
+    <div id="cursor" aria-hidden="true"></div>
+
+    <nav id="main-nav" aria-label="Main navigation">
+        <a href="work.html" class="nav-link">Work</a>
+        <a href="#info" class="nav-link" id="info-link" role="button" aria-expanded="false" aria-controls="info-panel" onclick="toggleInfo(event)">Info</a>
+    </nav>
 
     <main class="content-stack">
-        <div class="header-outer">
+        <header class="header-outer" id="main-header">
             <div class="header-row" id="header-row">
-                <h1 class="fluid-name" id="name-text">TOMAS COWARD</h1>
+                <a href="/" class="fluid-name" id="name-text" aria-label="Tomas Coward — return to home" onclick="toggleInfo(event, false)">TOMAS COWARD</a>
             </div>
-            <nav id="main-nav">
-                <a href="work.html" class="nav-link">Work</a>
-                <a href="about.html" class="nav-link">About</a>
-            </nav>
-        </div>
+        </header>
         <div class="image-container">
             <img src="home.webp" alt="Tomas Coward">
         </div>
     </main>
 
+    <section id="info-panel" aria-label="Info" aria-hidden="true" tabindex="-1">
+        <div class="info-content" id="info-text">
+            <p style="margin-top: 0;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+            <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+        </div>
+    </section>
+
     <script>
-        var headerRow = document.getElementById('header-row');
-        var stack     = document.querySelector('.content-stack');
-        var text      = document.getElementById('name-text');
-        var nav       = document.getElementById('main-nav');
+        var nameText  = document.getElementById('name-text'),
+            headerRow = document.getElementById('header-row'),
+            mainHeader = document.getElementById('main-header'),
+            stack     = document.querySelector('.content-stack'),
+            nav       = document.getElementById('main-nav'),
+            infoPanel = document.getElementById('info-panel'),
+            infoContent = document.getElementById('info-text'),
+            infoLink  = document.getElementById('info-link'),
+            cursor    = document.getElementById('cursor');
 
-        function fitText() {
-            var mobile = window.innerWidth <= 800;
-            text.style.transform = 'scale(1)';
+        function toggleInfo(e, forceClose) {
+            if (e) e.preventDefault();
+            var isOpen = infoPanel.classList.contains('is-open');
+            var shouldOpen = forceClose === false ? false : !isOpen;
 
-            var targetWidth  = mobile ? headerRow.clientWidth : stack.clientWidth;
-            var textWidth    = text.offsetWidth;
-            var textHeight   = text.offsetHeight;
-            if (!textWidth) return;
-
-            var scale        = targetWidth / textWidth;
-            var scaledHeight = textHeight * scale;
-
-            text.style.transform   = 'scale(' + scale + ')';
-            headerRow.style.height = (scaledHeight + 10) + 'px';
-
-            nav.style.top = mobile ? '' : (14 + (scaledHeight + 10) / 2 - nav.offsetHeight / 2) + 'px';
+            infoPanel.classList.toggle('is-open', shouldOpen);
+            document.body.classList.toggle('info-open', shouldOpen);
+            infoPanel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            infoLink.setAttribute('aria-expanded', String(shouldOpen));
+            history.pushState(null, '', shouldOpen ? '#info' : location.pathname);
+            layout();
         }
 
-        document.fonts.ready.then(fitText);
-        window.addEventListener('resize', fitText);
+        window.addEventListener('popstate', function() {
+            var shouldBeOpen = location.hash === '#info';
+            if (infoPanel.classList.contains('is-open') !== shouldBeOpen) {
+                toggleInfo(null, shouldBeOpen);
+            }
+        });
 
-        var cursor = document.getElementById('custom-cursor');
+        function layout() {
+            var mobile = window.innerWidth <= 800;
+            nameText.style.transform = 'scale(1)';
+
+            var availableWidth = mobile ? (headerRow.clientWidth - nav.offsetWidth - 20) : stack.clientWidth;
+            var scale = availableWidth / nameText.offsetWidth;
+            var h     = (nameText.offsetHeight * scale) + 10;
+
+            nameText.style.transform = 'scale(' + scale + ')';
+            headerRow.style.height   = h + 'px';
+
+            var headerOffset = 14;
+            nav.style.top = mobile ? (headerOffset + h - nav.offsetHeight - 10) + 'px' : (headerOffset + h / 2 - nav.offsetHeight / 2) + 'px';
+
+            if (mobile) {
+                var headerTotal = h + headerOffset + 20; 
+                infoContent.style.paddingTop = headerTotal + 'px';
+            } else {
+                var imageTop = document.querySelector('.image-container').getBoundingClientRect().top;
+                infoContent.style.paddingTop = imageTop + 'px';
+            }
+        }
+
+        document.fonts.ready.then(layout);
+        window.addEventListener('resize', layout);
+
         document.addEventListener('mousemove', function(e) {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top  = e.clientY + 'px';
