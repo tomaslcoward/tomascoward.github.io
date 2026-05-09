@@ -16,14 +16,18 @@
 
         #cursor { width: 20px; height: 20px; background: #fff; border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; mix-blend-mode: difference; transform: translate(-50%, -50%); }
 
+        /* Desktop Layout */
         .content-stack { width: 48%; height: 100vh; margin-left: 50px; padding-top: 14px; display: flex; flex-direction: column; box-sizing: border-box; }
         .header-outer { width: 100%; flex-shrink: 0; display: flex; align-items: flex-end; background: transparent; position: relative; z-index: 9001; }
         .header-row { width: 100%; overflow: visible; padding-bottom: 10px; display: flex; align-items: flex-end; }
 
         .fluid-name { font-family: 'HyperScrypt', sans-serif; text-transform: uppercase; font-size: 120px; line-height: 1; margin: 0; white-space: nowrap; transform-origin: left bottom; text-decoration: none; color: #000; display: inline-block; }
 
-        nav { display: flex; gap: 20px; font-family: 'AlteHaasBold', sans-serif; text-transform: uppercase; position: fixed; z-index: 9002; pointer-events: auto; }
-        @media (min-width: 801px) { nav { right: 50px; align-items: center; } }
+        nav { display: flex; font-family: 'AlteHaasBold', sans-serif; text-transform: uppercase; position: fixed; z-index: 9002; pointer-events: auto; }
+        
+        @media (min-width: 801px) { 
+            nav { right: 50px; align-items: center; gap: 20px; } 
+        }
 
         .nav-link { color: #000; text-decoration: none; font-size: 24px; cursor: none; transition: filter 0.3s ease; }
         .nav-link:hover { filter: blur(4px); }
@@ -40,15 +44,26 @@
         #info-panel.is-open .info-content { opacity: 1; }
         .info-content p { margin: 0 0 1em; }
 
+        /* Mobile Adjustments */
         @media (max-width: 800px) {
             html, body { cursor: auto; }
             #cursor { display: none; }
-            .content-stack { width: calc(100% - 60px); margin-left: 30px; height: 100vh; position: relative; }
-            nav { right: 30px; gap: 15px; display: flex; }
+            .content-stack { width: calc(100% - 40px); margin-left: 20px; height: 100vh; position: relative; }
+            
+            nav { 
+                position: relative; 
+                width: 100%; 
+                justify-content: space-between; 
+                padding: 10px 0; 
+                right: auto;
+                left: 0;
+            }
+            
             .nav-link { font-size: 16px; cursor: auto; }
+            
             #info-panel { width: 100%; transform: translateY(100%); z-index: 5000; }
             #info-panel.is-open { transform: translateY(0); }
-            .info-content { padding: 0 30px 40px; }
+            .info-content { padding: 0 20px 40px; }
         }
     </style>
 </head>
@@ -56,17 +71,18 @@
 
     <div id="cursor" aria-hidden="true"></div>
 
-    <nav id="main-nav" aria-label="Main navigation">
-        <a href="work.html" class="nav-link">Work</a>
-        <a href="#info" class="nav-link" id="info-link" role="button" aria-expanded="false" aria-controls="info-panel" onclick="toggleInfo(event)">Info</a>
-    </nav>
-
     <main class="content-stack">
         <header class="header-outer" id="main-header">
             <div class="header-row" id="header-row">
                 <a href="/" class="fluid-name" id="name-text" aria-label="Tomas Coward — return to home" onclick="toggleInfo(event, false)">TOMAS COWARD</a>
             </div>
         </header>
+
+        <nav id="main-nav" aria-label="Main navigation">
+            <a href="work.html" class="nav-link">Work</a>
+            <a href="#info" class="nav-link" id="info-link" role="button" aria-expanded="false" aria-controls="info-panel" onclick="toggleInfo(event)">Info</a>
+        </nav>
+
         <div class="image-container">
             <img src="home.webp" alt="Tomas Coward">
         </div>
@@ -115,7 +131,8 @@
             var mobile = window.innerWidth <= 800;
             nameText.style.transform = 'scale(1)';
 
-            var availableWidth = mobile ? (headerRow.clientWidth - nav.offsetWidth - 20) : stack.clientWidth;
+            // Scale name to full container width on both desktop and mobile
+            var availableWidth = mobile ? headerRow.clientWidth : stack.clientWidth;
             var scale = availableWidth / nameText.offsetWidth;
             var h     = (nameText.offsetHeight * scale) + 10;
 
@@ -123,12 +140,19 @@
             headerRow.style.height   = h + 'px';
 
             var headerOffset = 14;
-            nav.style.top = mobile ? (headerOffset + h - nav.offsetHeight - 10) + 'px' : (headerOffset + h / 2 - nav.offsetHeight / 2) + 'px';
 
             if (mobile) {
-                var headerTotal = h + headerOffset + 20; 
+                // Remove fixed positioning for mobile to let it sit in the flow
+                nav.style.position = 'relative';
+                nav.style.top = 'auto';
+                
+                // Calculate padding for info content: Name height + Nav height + Buffer
+                var headerTotal = h + headerOffset + nav.offsetHeight + 30; 
                 infoContent.style.paddingTop = headerTotal + 'px';
             } else {
+                nav.style.position = 'fixed';
+                nav.style.top = (headerOffset + h / 2 - nav.offsetHeight / 2) + 'px';
+                
                 var imageTop = document.querySelector('.image-container').getBoundingClientRect().top;
                 infoContent.style.paddingTop = imageTop + 'px';
             }
